@@ -1,0 +1,256 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <span class="text-4xl">📊</span>
+            Statistiques Globales
+          </h1>
+          <p class="text-gray-600 mt-1">Vue d'ensemble de votre plateforme Study Planner</p>
+        </div>
+        <a routerLink="/dashboard" 
+           class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+          ← Retour
+        </a>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+        <svg class="animate-spin w-12 h-12 mx-auto text-blue-600" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <p class="mt-4 text-gray-600">Chargement des statistiques...</p>
+      </div>
+    } @else if (stats()) {
+      
+      <!-- Cards principales -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl shadow-xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-4xl">👥</span>
+            <span class="text-3xl font-bold">{{ stats().users.total }}</span>
+          </div>
+          <p class="text-blue-100 font-medium">Utilisateurs Total</p>
+          <p class="text-xs text-blue-200 mt-1">+{{ stats().users.newUsersLastWeek }} cette semaine</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl shadow-xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-4xl">👑</span>
+            <span class="text-3xl font-bold">{{ stats().users.admins }}</span>
+          </div>
+          <p class="text-purple-100 font-medium">Administrateurs</p>
+          <p class="text-xs text-purple-200 mt-1">{{ stats().users.regularUsers }} étudiants</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl shadow-xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-4xl">📚</span>
+            <span class="text-3xl font-bold">{{ stats().content.totalSubjects }}</span>
+          </div>
+          <p class="text-green-100 font-medium">Matières créées</p>
+        </div>
+
+        <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl shadow-xl p-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-4xl">⏱️</span>
+            <span class="text-3xl font-bold">{{ stats().productivity.totalHoursStudied }}h</span>
+          </div>
+          <p class="text-orange-100 font-medium">Heures étudiées</p>
+        </div>
+      </div>
+
+      <!-- 🎯 NOUVELLE SECTION : Donut chart + Productivité hebdo -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        
+        <!-- 🍩 Donut Chart : Répartition des sessions -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            🍩 Répartition des sessions
+          </h2>
+          
+          @if (donutData(); as data) {
+            <div class="flex flex-col items-center">
+              <!-- SVG Donut -->
+              <div class="relative w-48 h-48 mb-4">
+                <svg viewBox="0 0 200 200" class="w-full h-full -rotate-90">
+                  <!-- Background circle -->
+                  <circle cx="100" cy="100" r="70" 
+                          fill="none" 
+                          stroke="#E5E7EB" 
+                          stroke-width="30"/>
+                  
+                  <!-- Completed (vert) -->
+                  @if (data.completed > 0) {
+                    <circle cx="100" cy="100" r="70"
+                            fill="none"
+                            stroke="#10B981"
+                            stroke-width="30"
+                            [attr.stroke-dasharray]="data.completedDash + ' ' + (data.circumference - data.completedDash)"
+                            [attr.stroke-dashoffset]="data.completedOffset"
+                            stroke-linecap="round"/>
+                  }
+                  
+                  <!-- Missed (rouge) -->
+                  @if (data.missed > 0) {
+                    <circle cx="100" cy="100" r="70"
+                            fill="none"
+                            stroke="#EF4444"
+                            stroke-width="30"
+                            [attr.stroke-dasharray]="data.missedDash + ' ' + (data.circumference - data.missedDash)"
+                            [attr.stroke-dashoffset]="data.missedOffset"
+                            stroke-linecap="round"/>
+                  }
+                  
+                  <!-- Planned (bleu) -->
+                  @if (data.planned > 0) {
+                    <circle cx="100" cy="100" r="70"
+                            fill="none"
+                            stroke="#3B82F6"
+                            stroke-width="30"
+                            [attr.stroke-dasharray]="data.plannedDash + ' ' + (data.circumference - data.plannedDash)"
+                            [attr.stroke-dashoffset]="data.plannedOffset"
+                            stroke-linecap="round"/>
+                  }
+                </svg>
+                
+                <!-- Texte au centre -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <p class="text-3xl font-bold text-gray-900">{{ data.total }}</p>
+                  <p class="text-xs text-gray-500">sessions</p>
+                </div>
+              </div>
+
+              <!-- Légende -->
+              <div class="w-full space-y-2">
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                  <span class="text-gray-700">Complétées : <strong>{{ data.completed }}</strong></span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                  <span class="text-gray-700">Manquées : <strong>{{ data.missed }}</strong></span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                  <span class="text-gray-700">Planifiées : <strong>{{ data.planned }}</strong></span>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="text-center py-12">
+              <p class="text-gray-500">Aucune session pour le moment</p>
+            </div>
+          }
+        </div>
+
+        <!-- 📅 Productivité hebdomadaire (graphique en barres) -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 lg:col-span-2">
+          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            📅 Productivité globale cette semaine
+          </h2>
+          
+          @if (weeklyStats().length > 0) {
+            <div class="h-64 flex items-end justify-around gap-2 px-4">
+              @for (day of weeklyStats(); track day.day) {
+                <div class="flex flex-col items-center flex-1 group">
+                  <!-- Tooltip au survol -->
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs px-2 py-1 rounded mb-1">
+                    {{ day.hours }}h
+                  </div>
+                  
+                  <!-- Valeur au-dessus -->
+                  <p class="text-sm font-semibold text-gray-700 mb-1">{{ day.hours }}h</p>
+                  
+                  <!-- Barre -->
+                  <div class="w-full bg-gray-100 rounded-t-lg relative overflow-hidden" 
+                       style="height: 150px;">
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-500 to-blue-400 transition-all duration-500 rounded-t-lg"
+                         [style.height.%]="getBarHeight(day.hours)">
+                    </div>
+                  </div>
+                  
+                  <!-- Jour -->
+                  <p class="text-sm font-bold text-gray-900 mt-2">{{ day.day }}</p>
+                  
+                  <!-- Sessions -->
+                  <p class="text-xs text-gray-500">{{ day.completed }}/{{ day.total }}</p>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="text-center py-12">
+              <p class="text-gray-500">Aucune donnée pour cette semaine</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Sessions par statut (cartes simples) -->
+      <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          📋 Détails des sessions
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-blue-700">📋 Planifiées</span>
+              <span class="text-2xl font-bold text-blue-900">{{ stats().sessions.planned }}</span>
+            </div>
+          </div>
+
+          <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-green-700">✅ Complétées</span>
+              <span class="text-2xl font-bold text-green-900">{{ stats().sessions.completed }}</span>
+            </div>
+          </div>
+
+          <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-red-700">❌ Manquées</span>
+              <span class="text-2xl font-bold text-red-900">{{ stats().sessions.missed }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions rapides -->
+      <div class="bg-white rounded-2xl shadow-xl p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">⚡ Actions rapides</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <a routerLink="/admin/users" 
+             class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 rounded-xl transition-all">
+            <div class="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xl">
+              👥
+            </div>
+            <div>
+              <p class="font-semibold text-gray-900">Gérer les utilisateurs</p>
+              <p class="text-sm text-gray-600">Voir, supprimer</p>
+            </div>
+          </a>
+          
+          <a routerLink="/admin/new-admin" 
+             class="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 border border-purple-200 rounded-xl transition-all">
+            <div class="w-12 h-12 bg-purple-600 text-white rounded-lg flex items-center justify-center text-xl">
+              ➕
+            </div>
+            <div>
+              <p class="font-semibold text-gray-900">Ajouter un admin</p>
+              <p class="text-sm text-gray-600">Créer un compte admin</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

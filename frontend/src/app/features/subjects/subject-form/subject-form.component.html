@@ -1,0 +1,213 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+  <div class="max-w-3xl mx-auto">
+    
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+            <span class="text-3xl">{{ isEditMode() ? '✏️' : '➕' }}</span>
+            {{ isEditMode() ? 'Modifier la matière' : 'Nouvelle matière' }}
+          </h1>
+          <p class="text-gray-600 mt-1">
+            {{ isEditMode() ? 'Modifiez les informations' : 'Créez une nouvelle matière à étudier' }}
+          </p>
+        </div>
+        <a routerLink="/subjects" 
+           class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+          ← Retour
+        </a>
+      </div>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      
+      @if (errorMessage()) {
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="subjectForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        
+        <!-- Nom -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Nom de la matière <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="Ex: Mathématiques, Angular, Anglais..."
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            [class.border-red-500]="name?.invalid && name?.touched"
+          />
+          @if (name?.invalid && name?.touched) {
+            <p class="text-red-500 text-xs mt-1.5">
+              @if (name?.errors?.['required']) { Le nom est obligatoire }
+              @if (name?.errors?.['minlength']) { Minimum 2 caractères }
+              @if (name?.errors?.['maxlength']) { Maximum 100 caractères }
+            </p>
+          }
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Description (optionnel)
+          </label>
+          <textarea
+            formControlName="description"
+            rows="3"
+            placeholder="Ex: Préparation examen final, Module avancé..."
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Priorité (étoiles) -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Priorité <span class="text-red-500">*</span>
+          </label>
+          <p class="text-xs text-gray-500 mb-3">Les matières prioritaires seront planifiées en premier</p>
+          <div class="flex items-center gap-2">
+            @for (level of [1, 2, 3, 4, 5]; track level) {
+              <button
+                type="button"
+                (click)="setPriority(level)"
+                class="text-3xl transition-transform hover:scale-110"
+                [class.opacity-30]="(priority?.value || 0) < level"
+              >
+                ⭐
+              </button>
+            }
+            <span class="ml-3 text-sm font-semibold text-gray-700">
+              ({{ priority?.value }}/5)
+            </span>
+          </div>
+        </div>
+
+        <!-- Couleur -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Couleur <span class="text-red-500">*</span>
+          </label>
+          <p class="text-xs text-gray-500 mb-3">Choisissez une couleur pour identifier la matière</p>
+          <div class="grid grid-cols-5 md:grid-cols-10 gap-2">
+            @for (color of colors; track color.value) {
+              <button
+                type="button"
+                (click)="selectColor(color.value)"
+                class="aspect-square rounded-lg transition-all hover:scale-110 relative"
+                [style.background-color]="color.value"
+                [title]="color.name"
+              >
+                @if (selectedColor === color.value) {
+                  <span class="absolute inset-0 flex items-center justify-center text-white text-xl">✓</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Objectif hebdomadaire -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Objectif hebdomadaire <span class="text-red-500">*</span>
+          </label>
+          <p class="text-xs text-gray-500 mb-3">Combien d'heures par semaine voulez-vous y consacrer ?</p>
+          <div class="flex items-center gap-3">
+            <input
+              type="number"
+              formControlName="weeklyGoalHours"
+              min="1"
+              max="60"
+              class="w-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              [class.border-red-500]="weeklyGoalHours?.invalid && weeklyGoalHours?.touched"
+            />
+            <span class="text-gray-700 font-medium">heures / semaine</span>
+          </div>
+          @if (weeklyGoalHours?.invalid && weeklyGoalHours?.touched) {
+            <p class="text-red-500 text-xs mt-1.5">
+              @if (weeklyGoalHours?.errors?.['required']) { Obligatoire }
+              @if (weeklyGoalHours?.errors?.['min']) { Minimum 1h }
+              @if (weeklyGoalHours?.errors?.['max']) { Maximum 60h }
+            </p>
+          }
+        </div>
+
+        <!-- Durée max d'une session -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Durée maximale par session <span class="text-red-500">*</span>
+          </label>
+          <p class="text-xs text-gray-500 mb-3">Durée maximum d'une seule session d'étude</p>
+          <div class="flex items-center gap-3">
+            <input
+              type="number"
+              formControlName="maxSessionDuration"
+              min="15"
+              max="480"
+              step="15"
+              class="w-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              [class.border-red-500]="maxSessionDuration?.invalid && maxSessionDuration?.touched"
+            />
+            <span class="text-gray-700 font-medium">minutes ({{ ((maxSessionDuration?.value || 0) / 60).toFixed(1) }}h)</span>
+          </div>
+          @if (maxSessionDuration?.invalid && maxSessionDuration?.touched) {
+            <p class="text-red-500 text-xs mt-1.5">
+              @if (maxSessionDuration?.errors?.['min']) { Minimum 15 minutes }
+              @if (maxSessionDuration?.errors?.['max']) { Maximum 480 minutes (8h) }
+            </p>
+          }
+        </div>
+
+        <!-- Aperçu -->
+        <div class="border-t border-gray-200 pt-6">
+          <p class="text-sm font-semibold text-gray-700 mb-3">Aperçu de votre matière :</p>
+          <div class="bg-gray-50 rounded-xl p-4 border-2 border-dashed border-gray-300">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl"
+                   [style.background-color]="selectedColor">
+                {{ name?.value?.charAt(0)?.toUpperCase() || '?' }}
+              </div>
+              <div class="flex-1">
+                <p class="font-bold text-gray-900">{{ name?.value || 'Nom de la matière' }}</p>
+                <div class="flex items-center gap-3 text-sm text-gray-600 mt-1">
+                  <span>{{ '⭐'.repeat(priority?.value || 0) }}</span>
+                  <span>{{ weeklyGoalHours?.value || 0 }}h/sem</span>
+                  <span>{{ maxSessionDuration?.value || 0 }}min/session</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons -->
+        <div class="flex gap-3 pt-6 border-t border-gray-200">
+          <a routerLink="/subjects" 
+             class="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-center transition-colors">
+            Annuler
+          </a>
+          <button
+            type="submit"
+            [disabled]="isLoading() || subjectForm.invalid"
+            class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-400 text-white font-semibold py-3 rounded-xl transition-all shadow-lg disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            @if (isLoading()) {
+              <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              {{ isEditMode() ? 'Modification...' : 'Création...' }}
+            } @else {
+              {{ isEditMode() ? '✓ Modifier' : '+ Créer' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

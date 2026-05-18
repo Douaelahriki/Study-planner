@@ -60,11 +60,11 @@ app.get('/api/health', (req, res) => {
 });
 
 // 📍 ROUTES TOI (à décommenter quand tu les crées)
-// app.use('/api/auth', require('./routes/auth.routes'));
-// app.use('/api/subjects', require('./routes/subject.routes'));
-// app.use('/api/sessions', require('./routes/session.routes'));
-// app.use('/api/admin', require('./routes/admin.routes'));
-
+app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/subjects', require('./routes/subject.routes'));
+app.use('/api/sessions', require('./routes/session.routes'));
+app.use('/api/admin', require('./routes/admin.routes'));
+app.use('/api/availability', require('./routes/availability.routes'));
 // 📍 ROUTES DOUAE (à décommenter quand elle les crée)
 // app.use('/api/groups', require('./routes/group.routes'));
 // app.use('/api/messages', require('./routes/message.routes'));

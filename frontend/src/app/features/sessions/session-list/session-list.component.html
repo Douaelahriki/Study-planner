@@ -1,0 +1,216 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <span class="text-4xl">📆</span>
+            Mes Sessions
+          </h1>
+          <p class="text-gray-600 mt-1">Gérez vos sessions d'étude</p>
+        </div>
+        <div class="flex gap-2">
+          <a routerLink="/sessions/new" 
+             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 font-semibold shadow-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Nouvelle session
+          </a>
+          <a routerLink="/dashboard" 
+             class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+            ← Retour
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    @if (successMessage()) {
+      <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        {{ successMessage() }}
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Stats -->
+    @if (sessions().length > 0) {
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl shadow-lg p-4 text-center">
+          <p class="text-3xl font-bold">{{ stats().total }}</p>
+          <p class="text-xs text-blue-100 mt-1">Total</p>
+        </div>
+        <div class="bg-gradient-to-br from-yellow-500 to-orange-500 text-white rounded-xl shadow-lg p-4 text-center">
+          <p class="text-3xl font-bold">{{ stats().planned }}</p>
+          <p class="text-xs text-yellow-100 mt-1">📋 Planifiées</p>
+        </div>
+        <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl shadow-lg p-4 text-center">
+          <p class="text-3xl font-bold">{{ stats().completed }}</p>
+          <p class="text-xs text-green-100 mt-1">✅ Complétées</p>
+        </div>
+        <div class="bg-gradient-to-br from-red-500 to-red-600 text-white rounded-xl shadow-lg p-4 text-center">
+          <p class="text-3xl font-bold">{{ stats().missed }}</p>
+          <p class="text-xs text-red-100 mt-1">❌ Manquées</p>
+        </div>
+      </div>
+    }
+
+    <!-- Filtres -->
+    @if (sessions().length > 0) {
+      <div class="bg-white rounded-2xl shadow-xl p-4 mb-6">
+        <div class="flex flex-wrap gap-2">
+          <button (click)="setFilter('all')"
+                  [class]="selectedFilter() === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
+                  class="px-4 py-2 rounded-lg font-medium transition-colors hover:opacity-80">
+            Toutes ({{ stats().total }})
+          </button>
+          <button (click)="setFilter('planned')"
+                  [class]="selectedFilter() === 'planned' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
+                  class="px-4 py-2 rounded-lg font-medium transition-colors hover:opacity-80">
+            📋 Planifiées ({{ stats().planned }})
+          </button>
+          <button (click)="setFilter('completed')"
+                  [class]="selectedFilter() === 'completed' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700'"
+                  class="px-4 py-2 rounded-lg font-medium transition-colors hover:opacity-80">
+            ✅ Complétées ({{ stats().completed }})
+          </button>
+          <button (click)="setFilter('missed')"
+                  [class]="selectedFilter() === 'missed' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700'"
+                  class="px-4 py-2 rounded-lg font-medium transition-colors hover:opacity-80">
+            ❌ Manquées ({{ stats().missed }})
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Loading -->
+    @if (isLoading()) {
+      <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+        <svg class="animate-spin w-12 h-12 mx-auto text-blue-600" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <p class="mt-4 text-gray-600">Chargement...</p>
+      </div>
+    }
+    
+    <!-- État vide -->
+    @else if (sessions().length === 0) {
+      <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+        <div class="text-6xl mb-4">📭</div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Aucune session pour le moment</h2>
+        <p class="text-gray-600 mb-6">Commencez par créer votre première session d'étude !</p>
+        <a routerLink="/sessions/new" 
+           class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-lg transition-colors">
+          + Créer ma première session
+        </a>
+      </div>
+    }
+    
+    <!-- Aucune session pour ce filtre -->
+    @else if (filteredSessions().length === 0) {
+      <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+        <p class="text-gray-600">Aucune session ne correspond à ce filtre</p>
+      </div>
+    }
+    
+    <!-- Liste des sessions -->
+    @else {
+      <div class="space-y-3">
+        @for (session of filteredSessions(); track session._id) {
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <div class="flex">
+              
+              <!-- Bandeau couleur -->
+              <div class="w-2" [style.background-color]="getSubjectColor(session)"></div>
+              
+              <div class="flex-1 p-5">
+                <div class="flex items-start justify-between gap-4">
+                  
+                  <!-- Infos session -->
+                  <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                      <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold"
+                           [style.background-color]="getSubjectColor(session)">
+                        {{ getSubjectName(session).charAt(0).toUpperCase() }}
+                      </div>
+                      <div>
+                        <h3 class="font-bold text-gray-900">{{ getSubjectName(session) }}</h3>
+                        @if (session.title) {
+                          <p class="text-sm text-gray-600">{{ session.title }}</p>
+                        }
+                      </div>
+                      <span class="ml-auto px-3 py-1 rounded-full text-xs font-semibold"
+                            [class]="getStatusColor(session.status)">
+                        {{ getStatusLabel(session.status) }}
+                      </span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4 text-sm text-gray-600 mt-3">
+                      <span class="flex items-center gap-1">
+                        📅 {{ formatDate(session.date) }}
+                      </span>
+                      <span class="flex items-center gap-1">
+                        🕒 {{ session.startTime }} - {{ session.endTime }}
+                      </span>
+                      <span class="flex items-center gap-1">
+                        ⏱️ {{ formatDuration(session.duration) }}
+                      </span>
+                      @if (session.isAutoGenerated) {
+                        <span class="flex items-center gap-1 text-purple-600">
+                          🤖 Auto-générée
+                        </span>
+                      }
+                    </div>
+
+                    @if (session.notes) {
+                      <p class="mt-3 text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                        📝 {{ session.notes }}
+                      </p>
+                    }
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
+                  
+                  @if (session.status === 'planned') {
+                    <button (click)="completeSession(session)"
+                            class="px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1">
+                      ✓ Terminer
+                    </button>
+                    <button (click)="missSession(session)"
+                            class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1">
+                      ✕ Manquée
+                    </button>
+                  }
+                  
+                  <a [routerLink]="['/sessions/edit', session._id]"
+                     class="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1">
+                    ✏️ Modifier
+                  </a>
+                  
+                  <button (click)="deleteSession(session)"
+                          class="px-3 py-2 bg-gray-50 hover:bg-red-50 text-gray-700 hover:text-red-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1 ml-auto">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>
