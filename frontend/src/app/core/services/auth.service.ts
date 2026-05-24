@@ -1,34 +1,33 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { User, AuthResponse, LoginRequest, RegisterRequest } from '../models/user.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api';
-
-  // Signals Angular 21
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  
+  private apiUrl = 'http://localhost:3000/api/auth';
+  
   private currentUserSignal = signal<User | null>(this.getUserFromStorage());
-  private tokenSignal = signal<string | null>(localStorage.getItem('token'));
+  public currentUser = this.currentUserSignal.asReadonly();
+  
+  public isAuthenticated = computed(() => this.currentUserSignal() !== null);
+  public isAdmin = computed(() => this.currentUserSignal()?.role === 'admin');
 
-  currentUser = this.currentUserSignal.asReadonly();
-  token = this.tokenSignal.asReadonly();
-  isLoggedIn = computed(() => !!this.tokenSignal());
-  isAdmin = computed(() => this.currentUserSignal()?.role === 'admin');
-
-  constructor(private http: HttpClient, private router: Router) {}
-
-  login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
-      tap(res => this.saveSession(res))
+  register(data: RegisterRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
+      tap(response => this.handleAuthSuccess(response))
     );
   }
 
-  register(data: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data).pipe(
-      tap(res => this.saveSession(res))
+  login(data: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data).pipe(
+      tap(response => this.handleAuthSuccess(response))
     );
   }
 
@@ -36,27 +35,21 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.currentUserSignal.set(null);
-    this.tokenSignal.set(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 
-  private saveSession(res: AuthResponse): void {
-    localStorage.setItem('token', res.token);
-    localStorage.setItem('user', JSON.stringify(res.user));
-    this.tokenSignal.set(res.token);
-    this.currentUserSignal.set(res.user);
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  private handleAuthSuccess(response: AuthResponse): void {
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+    this.currentUserSignal.set(response.user);
   }
 
   private getUserFromStorage(): User | null {
-  try {
-    const user = localStorage.getItem('user');
-    if (!user || user === 'undefined') return null;
-    return JSON.parse(user);
-  } catch {
-    return null;
-  }
-}
-  getToken(): string | null {
-    return localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
   }
 }

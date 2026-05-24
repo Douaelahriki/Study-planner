@@ -1,0 +1,79 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-100 px-4 py-8">
+  <div class="w-full max-w-md">
+    
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg mb-4">
+        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900">Bon retour !</h1>
+      <p class="text-gray-600 mt-2">Connectez-vous à votre Study Planner</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        
+        @if (errorMessage()) {
+          <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="vous@exemple.com"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          />
+          @if (email?.invalid && email?.touched) {
+            <p class="text-red-500 text-xs mt-1.5">
+              @if (email?.errors?.['required']) { Email requis }
+              @if (email?.errors?.['email']) { Email invalide }
+            </p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Mot de passe</label>
+          <div class="relative">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              class="w-full px-4 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+            <button type="button" (click)="togglePassword()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+              {{ showPassword() ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          @if (password?.invalid && password?.touched) {
+            <p class="text-red-500 text-xs mt-1.5">
+              @if (password?.errors?.['required']) { Mot de passe requis }
+              @if (password?.errors?.['minlength']) { Minimum 6 caractères }
+            </p>
+          }
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="isLoading() || loginForm.invalid"
+          class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-400 text-white font-semibold py-3 rounded-xl transition-all shadow-lg disabled:cursor-not-allowed"
+        >
+          {{ isLoading() ? 'Connexion...' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+          Pas encore de compte ?
+          <a routerLink="/register" class="font-semibold text-blue-600 hover:text-blue-700">Créer un compte</a>
+        </p>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-gray-500 mt-8">© 2026 Study Planner. Tous droits réservés.</p>
+  </div>
+</div>
