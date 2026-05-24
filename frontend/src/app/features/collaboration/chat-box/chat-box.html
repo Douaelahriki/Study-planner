@@ -1,0 +1,43 @@
+<div class="chat-box">
+  <div class="messages-container">
+    @if (loading()) {
+      <div class="loading">Chargement des messages...</div>
+    } @else if (messages().length === 0) {
+      <div class="empty">Aucun message. Soyez le premier à écrire ! 💬</div>
+    } @else {
+      @for (msg of messages(); track msg._id) {
+        <div class="message" [class.my-message]="isMyMessage(msg)">
+          @if (!isMyMessage(msg)) {
+            <div class="sender-avatar">{{ msg.senderId.name[0].toUpperCase() }}</div>
+          }
+          <div class="message-bubble">
+            @if (!isMyMessage(msg)) {
+              <span class="sender-name">{{ msg.senderId.name }}</span>
+            }
+            <p>{{ msg.content }}</p>
+            <span class="time">{{ msg.createdAt | date:'HH:mm' }}</span>
+          </div>
+        </div>
+      }
+      <div #messagesEnd></div>
+    }
+
+    @if (typingUser()) {
+      <div class="typing-indicator">{{ typingUser() }} est en train d'écrire...</div>
+    }
+  </div>
+
+  <div class="message-input">
+    <textarea
+      [ngModel]="newMessage()"
+      (ngModelChange)="newMessage.set($event)"
+      (keydown)="onKeyEnter($event)"
+      (input)="onTyping()"
+      placeholder="Écrire un message... (Entrée pour envoyer)"
+      rows="1">
+    </textarea>
+    <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage().trim()">
+      ➤
+    </button>
+  </div>
+</div> 

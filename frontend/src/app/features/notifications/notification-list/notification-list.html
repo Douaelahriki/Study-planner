@@ -1,0 +1,54 @@
+<div class="notifications-page">
+  <div class="page-header">
+    <h1>🔔 Notifications</h1>
+    @if (notificationService.unreadCount() > 0) {
+      <button class="btn-mark-all" (click)="markAllRead()">
+        ✅ Tout marquer comme lu ({{ notificationService.unreadCount() }})
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  } @else if (notifications().length === 0) {
+    <div class="empty-state">
+      <p>🔔 Aucune notification</p>
+      <span>Vous êtes à jour !</span>
+    </div>
+  } @else {
+    <div class="notifications-list">
+      @for (notif of notifications(); track notif._id) {
+        <div class="notif-card" [class.unread]="!notif.isRead">
+          <div class="notif-icon">{{ getIcon(notif.type) }}</div>
+
+          <div class="notif-content">
+            <h4>{{ notif.title }}</h4>
+            <p>{{ notif.message }}</p>
+            <span class="notif-time">{{ notif.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+
+            <!-- Boutons accepter/refuser pour les invitations -->
+            @if (notif.type === 'invitation' && notif.relatedId && !respondedInvitations().has(notif._id)) {
+  <div class="invitation-actions">
+    <button class="btn-accept" (click)="respondInvitation(notif.relatedId, 'accepted', notif._id)">
+      ✅ Accepter
+    </button>
+    <button class="btn-refuse" (click)="respondInvitation(notif.relatedId, 'refused', notif._id)">
+      ❌ Refuser
+    </button>
+  </div>
+} @else if (notif.type === 'invitation' && respondedInvitations().has(notif._id)) {
+  <span class="responded-badge">✓ Répondu</span>
+}
+          </div>
+
+          <div class="notif-actions">
+            @if (!notif.isRead) {
+              <button class="btn-read" (click)="markRead(notif._id)" title="Marquer comme lu">✓</button>
+            }
+            <button class="btn-delete" (click)="deleteNotif(notif._id)" title="Supprimer">🗑️</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

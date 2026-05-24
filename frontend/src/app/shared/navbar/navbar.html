@@ -1,0 +1,63 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <span class="logo">📚 Study Planner</span>
+  </div>
+
+  <div class="navbar-actions">
+
+    <!-- Cloche notifications -->
+    <div class="notification-wrapper">
+      <button class="icon-btn" (click)="toggleNotifications()">
+        🔔
+        @if (notificationService.unreadCount() > 0) {
+          <span class="badge">{{ notificationService.unreadCount() }}</span>
+        }
+      </button>
+
+      <!-- Dropdown notifications -->
+      @if (showNotifications()) {
+        <div class="notifications-dropdown">
+          <div class="dropdown-header">
+            <h4>Notifications</h4>
+            @if (notificationService.unreadCount() > 0) {
+              <button (click)="markAllRead()">Tout lire</button>
+            }
+          </div>
+
+          <div class="notifications-list">
+            @if (notifications().length === 0) {
+              <p class="empty">Aucune notification</p>
+            }
+            @for (notif of notifications(); track notif._id) {
+              <div class="notif-item" [class.unread]="!notif.isRead"
+                   (click)="markRead(notif._id)">
+                <div class="notif-icon">
+                  @switch (notif.type) {
+                    @case ('invitation') { 👥 }
+                    @case ('reminder') { ⏰ }
+                    @case ('goal_reached') { 🎯 }
+                    @default { 🔔 }
+                  }
+                </div>
+                <div class="notif-content">
+                  <p class="notif-title">{{ notif.title }}</p>
+                  <p class="notif-message">{{ notif.message }}</p>
+                  <span class="notif-time">
+                    {{ notif.createdAt | date:'dd/MM HH:mm' }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- User info -->
+    <div class="user-info">
+      <span class="user-name">{{ authService.currentUser()?.name }}</span>
+      <button class="logout-btn" (click)="logout()">Déconnexion</button>
+    </div>
+
+  </div>
+</nav> 

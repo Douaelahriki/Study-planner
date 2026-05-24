@@ -1,0 +1,157 @@
+<div class="dashboard-page">
+
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  } @else {
+
+    <div class="welcome-card">
+      <div class="welcome-header">
+        <div>
+          <h1>👋 Bienvenue, {{ authService.currentUser()?.name }} !</h1>
+          <p>Ton tableau de bord Study Planner</p>
+        </div>
+        <button class="btn-refresh" (click)="loadAll()">🔄 Actualiser</button>
+      </div>
+
+      <div class="quick-section">
+        <h3>📚 Mes Outils d'Étude</h3>
+        <p class="section-subtitle">Organisez et planifiez votre temps d'étude.</p>
+        <div class="quick-actions">
+          @for (action of quickActions; track action.route) {
+            <a [routerLink]="action.route" class="action-card" [class.highlight]="action.highlight">
+              <span class="action-icon">{{ action.icon }}</span>
+              <span class="action-label">{{ action.label }}</span>
+              <span class="action-sub" [class.ai-badge]="action.highlight">
+                @if (action.highlight) { ⭐ } {{ action.subtitle }}
+              </span>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="info-cards">
+      <div class="info-card email-card">
+        <h4>Email</h4>
+        <p>{{ authService.currentUser()?.email }}</p>
+      </div>
+      <div class="info-card role-card">
+        <h4>Rôle</h4>
+        <p>👤 Étudiant</p>
+      </div>
+      <div class="info-card status-card">
+        <h4>Status</h4>
+        <p>✅ Connecté</p>
+      </div>
+    </div>
+
+    <div class="quick-links">
+      @for (link of quickLinks; track link.route) {
+        <a [routerLink]="link.route" class="link-card">
+          <span class="link-icon">{{ link.icon }}</span>
+          <div>
+            <span class="link-label">{{ link.label }}</span>
+            <span class="link-sub">{{ link.subtitle }}</span>
+          </div>
+        </a>
+      }
+      <div class="link-card stats-toggle" (click)="toggleStats()">
+        <span class="link-icon">📊</span>
+        <div>
+          <span class="link-label">Statistiques</span>
+          <span class="link-sub">{{ showStats() ? 'Masquer' : 'Ma progression' }}</span>
+        </div>
+        <span class="toggle-arrow">{{ showStats() ? '▲' : '▼' }}</span>
+      </div>
+    </div>
+
+    @if (showStats()) {
+      <div class="stats-revealed">
+
+        @if (summary()) {
+          <div class="stats-section">
+            <h3>📊 Mes Statistiques</h3>
+            <div class="stats-cards">
+              <div class="stat-card blue">
+                <div class="stat-icon">📚</div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ summary()!.totalHours }}h</span>
+                  <span class="stat-label">Total étudié</span>
+                </div>
+              </div>
+              <div class="stat-card green">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ summary()!.completedSessions }}</span>
+                  <span class="stat-label">Sessions complétées</span>
+                </div>
+              </div>
+              <div class="stat-card orange">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ summary()!.completionRate }}%</span>
+                  <span class="stat-label">Taux de complétion</span>
+                </div>
+              </div>
+              <div class="stat-card red">
+                <div class="stat-icon">❌</div>
+                <div class="stat-info">
+                  <span class="stat-value">{{ summary()!.missedSessions }}</span>
+                  <span class="stat-label">Sessions manquées</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (weeklyStats().length > 0) {
+          <div class="chart-card">
+            <h2>📅 Productivité cette semaine</h2>
+            <div class="bar-chart">
+              @for (day of weeklyStats(); track day.date) {
+                <div class="bar-group">
+                  <div class="bar-wrapper">
+                    <span class="bar-value">{{ day.hours }}h</span>
+                    <div class="bar"
+                         [style.height.%]="getBarHeight(day.hours)"
+                         [style.background]="day.hours > 0 ? '#3b82f6' : '#e2e8f0'">
+                    </div>
+                  </div>
+                  <span class="bar-label">{{ day.day }}</span>
+                  <span class="bar-sessions">{{ day.completed }}/{{ day.planned }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (subjectStats().length > 0) {
+          <div class="chart-card">
+            <h2>📚 Progression par matière</h2>
+            <div class="subject-stats">
+              @for (subject of subjectStats(); track subject.subjectId) {
+                <div class="subject-row">
+                  <div class="subject-header">
+                    <div class="subject-color-dot" [style.background]="subject.color"></div>
+                    <span class="subject-name">{{ subject.name }}</span>
+                    <span class="subject-hours">{{ subject.totalHours }}h / {{ subject.goalHours }}h</span>
+                    <span class="subject-percent">{{ subject.progress }}%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill"
+                         [style.width.%]="subject.progress"
+                         [style.background]="subject.color">
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+      </div>
+    }
+
+  }
+
+</div>

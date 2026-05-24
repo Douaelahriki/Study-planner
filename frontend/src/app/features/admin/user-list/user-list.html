@@ -1,0 +1,52 @@
+<div class="user-list-page">
+  <div class="page-header">
+    <h1>⚙️ Gestion des utilisateurs</h1>
+    <span class="total-badge">{{ users().length }} utilisateur(s)</span>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  } @else if (users().length === 0) {
+    <div class="empty">Aucun utilisateur trouvé</div>
+  } @else {
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Inscrit le</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user._id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar">{{ user.name[0].toUpperCase() }}</div>
+                  <span>{{ user.name }}</span>
+                </div>
+              </td>
+              <td>{{ user.email }}</td>
+              <td>
+                <select [value]="user.role"
+                        (change)="changeRole(user._id, $any($event.target).value)">
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </td>
+              <td>{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <button class="btn-delete" (click)="deleteUser(user._id, user.name)">
+                  🗑️ Supprimer
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div> 

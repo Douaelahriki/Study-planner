@@ -1,0 +1,63 @@
+<div class="group-detail-page">
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  } @else if (group()) {
+    <div class="group-header">
+      <div class="group-avatar">{{ group()!.name[0].toUpperCase() }}</div>
+      <div>
+        <h1>{{ group()!.name }}</h1>
+        <p>{{ group()!.description }}</p>
+        <span>👤 {{ group()!.members.length }} membre(s)</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button [class.active]="activeTab() === 'chat'" (click)="setTab('chat')">💬 Chat</button>
+      <button [class.active]="activeTab() === 'members'" (click)="setTab('members')">👥 Membres</button>
+      <button [class.active]="activeTab() === 'invite'" (click)="setTab('invite')">➕ Inviter</button>
+    </div>
+
+    <!-- Chat -->
+    @if (activeTab() === 'chat') {
+      <app-chat-box [groupId]="groupId()" />
+    }
+
+    <!-- Membres -->
+    @if (activeTab() === 'members') {
+      <div class="members-list">
+        @for (member of group()!.members; track member._id) {
+          <div class="member-item">
+            <div class="member-avatar">{{ member.name[0].toUpperCase() }}</div>
+            <div>
+              <p class="member-name">{{ member.name }}</p>
+              <p class="member-email">{{ member.email }}</p>
+            </div>
+            @if (member._id === group()!.owner._id) {
+              <span class="owner-badge">👑 Créateur</span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Inviter -->
+    @if (activeTab() === 'invite') {
+      <div class="invite-section">
+        <h3>Inviter un membre</h3>
+        @if (inviteSuccess()) {
+          <div class="success-msg">✅ {{ inviteSuccess() }}</div>
+        }
+        @if (inviteError()) {
+          <div class="error-msg">⚠️ {{ inviteError() }}</div>
+        }
+        <div class="invite-form">
+          <input type="email" placeholder="Email de l'utilisateur"
+                 [ngModel]="inviteEmail()"
+                 (ngModelChange)="inviteEmail.set($event)" />
+          <button class="btn-primary" (click)="inviteMember()">Envoyer l'invitation</button>
+        </div>
+      </div>
+    }
+  }
+</div> 

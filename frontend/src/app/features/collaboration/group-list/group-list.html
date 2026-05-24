@@ -1,0 +1,38 @@
+<div class="group-list-page">
+  <div class="page-header">
+    <h1>👥 Mes Groupes</h1>
+    <button class="btn-primary" (click)="toggleForm()">
+      {{ showForm() ? 'Annuler' : '+ Nouveau groupe' }}
+    </button>
+  </div>
+
+  @if (showForm()) {
+    <app-group-form (groupCreated)="onGroupCreated()" />
+  }
+
+  @if (loading()) {
+    <div class="loading">Chargement...</div>
+  } @else if (groups().length === 0) {
+    <div class="empty-state">
+      <p>👥 Aucun groupe pour l'instant</p>
+      <button class="btn-primary" (click)="toggleForm()">Créer mon premier groupe</button>
+    </div>
+  } @else {
+    <div class="groups-grid">
+      @for (group of groups(); track group._id) {
+        <div class="group-card">
+          <div class="group-avatar">{{ group.name[0].toUpperCase() }}</div>
+          <div class="group-info">
+            <h3>{{ group.name }}</h3>
+            <p>{{ group.description || 'Aucune description' }}</p>
+            <span class="members-count">👤 {{ group.members.length }} membre(s)</span>
+          </div>
+          <div class="group-actions">
+            <a [routerLink]="['/collaboration', group._id]" class="btn-secondary">Ouvrir</a>
+            <button class="btn-danger" (click)="deleteGroup(group._id)">🗑️</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div> 

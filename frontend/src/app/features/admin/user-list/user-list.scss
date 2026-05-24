@@ -1,0 +1,107 @@
+.user-list-page {
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    h1 { margin: 0; color: #1e293b; }
+
+    .total-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  }
+
+  .loading, .empty {
+    text-align: center;
+    padding: 48px;
+    color: #64748b;
+  }
+
+  .table-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead tr {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+
+        th {
+          padding: 14px 16px;
+          text-align: left;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+        }
+      }
+
+      tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s;
+
+        &:hover { background: #f8fafc; }
+        &:last-child { border-bottom: none; }
+
+        td {
+          padding: 14px 16px;
+          font-size: 0.9rem;
+          color: #1e293b;
+        }
+      }
+    }
+
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #3b82f6;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+    }
+
+    select {
+      padding: 6px 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      background: white;
+      &:focus { outline: none; border-color: #3b82f6; }
+    }
+
+    .btn-delete {
+      background: #fee2e2;
+      color: #ef4444;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      &:hover { background: #ef4444; color: white; }
+    }
+  }
+}
