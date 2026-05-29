@@ -94,3 +94,13 @@
   cursor: pointer;
   &:hover { background: #fecaca; }
 }
+.btn-back {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  &:hover { background: #e2e8f0; }
+}

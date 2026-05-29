@@ -211,6 +211,10 @@
       font-size: 1.4rem;
       flex-shrink: 0;
     }
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
 
     .stat-info {
       display: flex;
@@ -355,4 +359,24 @@
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
+}           
+.admin-section {
+  background: linear-gradient(135deg, #f5f3ff, #fdf2f8);
+  border: 2px solid #e9d5ff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+
+  h3 { margin: 0 0 4px; font-size: 1rem; color: #581c87; }
+  .section-subtitle { margin: 0 0 16px; font-size: 0.85rem; color: #7c3aed; }
+}
+
+.btn-logout {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover { background: #dc2626; }
 }

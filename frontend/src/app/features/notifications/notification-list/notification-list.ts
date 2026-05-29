@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../core/services/notification.service';
 import { GroupService } from '../../../core/services/group.service';
 import { Notification } from '../../../core/models/notification.model';
-
+import { RouterModule } from '@angular/router';
 
 
 
@@ -16,7 +16,7 @@ import { Notification } from '../../../core/models/notification.model';
 @Component({
   selector: 'app-notification-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './notification-list.html',
   styleUrl: './notification-list.scss'
 })

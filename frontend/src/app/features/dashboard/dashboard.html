@@ -1,9 +1,52 @@
 <div class="dashboard-page">
 
-  @if (loading()) {
+  <!-- VUE ADMIN -->
+  @if (authService.isAdmin()) {
+    <div class="welcome-card">
+      <div class="welcome-header">
+        <div>
+          <h1>👑 Bienvenue, {{ authService.currentUser()?.name }} !</h1>
+          <p>Espace Administrateur</p>
+        </div>
+        <button class="btn-logout" (click)="logout()">Déconnexion</button>
+      </div>
+
+      <div class="admin-section">
+        <h3>👑 Espace Administrateur</h3>
+        <p class="section-subtitle">Gérez les utilisateurs et consultez les statistiques globales.</p>
+        <div class="quick-actions">
+          @for (link of adminLinks; track link.route) {
+            <a [routerLink]="link.route" class="action-card">
+              <span class="action-icon">{{ link.icon }}</span>
+              <span class="action-label">{{ link.label }}</span>
+              <span class="action-sub">{{ link.subtitle }}</span>
+            </a>
+          }
+        </div>
+      </div>
+
+      <div class="info-cards">
+        <div class="info-card email-card">
+          <h4>Email</h4>
+          <p>{{ authService.currentUser()?.email }}</p>
+        </div>
+        <div class="info-card role-card">
+          <h4>Rôle</h4>
+          <p>👑 Admin</p>
+        </div>
+        <div class="info-card status-card">
+          <h4>Status</h4>
+          <p>✅ Connecté</p>
+        </div>
+      </div>
+    </div>
+
+  } @else if (loading()) {
     <div class="loading">Chargement...</div>
+
   } @else {
 
+    <!-- VUE USER -->
     <div class="welcome-card">
       <div class="welcome-header">
         <div>
@@ -11,6 +54,7 @@
           <p>Ton tableau de bord Study Planner</p>
         </div>
         <button class="btn-refresh" (click)="loadAll()">🔄 Actualiser</button>
+        <button class="btn-logout" (click)="logout()">🚪 Déconnexion</button>
       </div>
 
       <div class="quick-section">
@@ -67,7 +111,6 @@
 
     @if (showStats()) {
       <div class="stats-revealed">
-
         @if (summary()) {
           <div class="stats-section">
             <h3>📊 Mes Statistiques</h3>
@@ -124,34 +167,8 @@
             </div>
           </div>
         }
-
-        @if (subjectStats().length > 0) {
-          <div class="chart-card">
-            <h2>📚 Progression par matière</h2>
-            <div class="subject-stats">
-              @for (subject of subjectStats(); track subject.subjectId) {
-                <div class="subject-row">
-                  <div class="subject-header">
-                    <div class="subject-color-dot" [style.background]="subject.color"></div>
-                    <span class="subject-name">{{ subject.name }}</span>
-                    <span class="subject-hours">{{ subject.totalHours }}h / {{ subject.goalHours }}h</span>
-                    <span class="subject-percent">{{ subject.progress }}%</span>
-                  </div>
-                  <div class="progress-bar">
-                    <div class="progress-fill"
-                         [style.width.%]="subject.progress"
-                         [style.background]="subject.color">
-                    </div>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
       </div>
     }
 
   }
-
 </div>

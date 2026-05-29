@@ -14,6 +14,7 @@
     <!-- Tabs -->
     <div class="tabs">
       <button [class.active]="activeTab() === 'chat'" (click)="setTab('chat')">💬 Chat</button>
+      <button [class.active]="activeTab() === 'sessions'" (click)="setTab('sessions')">📚 Sessions</button>
       <button [class.active]="activeTab() === 'members'" (click)="setTab('members')">👥 Membres</button>
       <button [class.active]="activeTab() === 'invite'" (click)="setTab('invite')">➕ Inviter</button>
     </div>
@@ -21,6 +22,40 @@
     <!-- Chat -->
     @if (activeTab() === 'chat') {
       <app-chat-box [groupId]="groupId()" />
+    }
+
+    <!-- Sessions partagées -->
+    @if (activeTab() === 'sessions') {
+      <div class="sessions-tab">
+        <div class="sessions-header">
+          <h3>📚 Sessions partagées</h3>
+          <button class="btn-share-session" (click)="showShareForm.update(v => !v)">
+            {{ showShareForm() ? 'Annuler' : '+ Partager une session' }}
+          </button>
+        </div>
+
+        @if (showShareForm()) {
+          <app-session-share
+            [groupId]="groupId()"
+            (sessionShared)="onSessionShared($event)"
+            (cancelled)="showShareForm.set(false)" />
+        }
+
+        @if (sessions().length === 0) {
+          <div class="empty-sessions">
+            <p>Aucune session partagée pour l'instant</p>
+            <button class="btn-share-session" (click)="showShareForm.set(true)">
+              Partager la première session
+            </button>
+          </div>
+        } @else {
+          @for (session of sessions(); track session._id) {
+            <app-session-card
+              [session]="session"
+              (sessionUpdated)="onSessionUpdated($event)" />
+          }
+        }
+      </div>
     }
 
     <!-- Membres -->
@@ -60,4 +95,4 @@
       </div>
     }
   }
-</div> 
+</div>

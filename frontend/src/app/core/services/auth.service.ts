@@ -43,13 +43,25 @@ export class AuthService {
   }
 
   private handleAuthSuccess(response: AuthResponse): void {
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    this.currentUserSignal.set(response.user);
-  }
+  localStorage.setItem('token', response.token);
+  // Normaliser l'utilisateur
+  const user = { ...response.user, _id: (response.user as any).id || response.user._id };
+  localStorage.setItem('user', JSON.stringify(user));
+  this.currentUserSignal.set(user);
+}
 
   private getUserFromStorage(): User | null {
+  try {
     const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    if (!userStr || userStr === 'undefined' || userStr === 'null') return null;
+    const user = JSON.parse(userStr);
+    // Normaliser id vers _id
+    if (user && user.id && !user._id) {
+      user._id = user.id;
+    }
+    return user;
+  } catch {
+    return null;
   }
+}
 }

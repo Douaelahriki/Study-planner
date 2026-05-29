@@ -1,0 +1,42 @@
+<div class="session-share-form">
+  <h3>📚 Partager une session d'étude</h3>
+
+  @if (error()) {
+    <div class="error-msg">⚠️ {{ error() }}</div>
+  }
+
+  <div class="form-group">
+    <label>Titre *</label>
+    <input type="text" [ngModel]="title()" (ngModelChange)="title.set($event)"
+           placeholder="Ex: Révision Angular" />
+  </div>
+
+  <div class="form-group">
+    <label>Matière *</label>
+    <input type="text" [ngModel]="subject()" (ngModelChange)="subject.set($event)"
+           placeholder="Ex: Angular, Maths..." />
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Date *</label>
+      <input type="date" [ngModel]="date()" (ngModelChange)="date.set($event)" />
+    </div>
+    <div class="form-group">
+      <label>Heure *</label>
+      <input type="time" [ngModel]="startTime()" (ngModelChange)="startTime.set($event)" />
+    </div>
+    <div class="form-group">
+      <label>Durée (min)</label>
+      <input type="number" [ngModel]="duration()" (ngModelChange)="duration.set(+$event)"
+             min="15" max="480" />
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn-cancel" (click)="cancelled.emit()">Annuler</button>
+    <button class="btn-share" (click)="submit()" [disabled]="loading()">
+      {{ loading() ? 'Partage...' : '📤 Partager' }}
+    </button>
+  </div>
+</div>

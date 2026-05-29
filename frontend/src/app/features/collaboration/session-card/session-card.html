@@ -1,0 +1,96 @@
+<div class="session-card">
+  <!-- Header -->
+  <div class="session-header">
+    <div class="creator-info">
+      <div class="avatar">{{ session.createdBy.name[0].toUpperCase() }}</div>
+      <div>
+        <span class="creator-name">{{ session.createdBy.name }}</span>
+        <span class="shared-text"> a partagé une session d'étude</span>
+      </div>
+    </div>
+    <span class="session-date-small">{{ session.createdAt | date:'dd/MM HH:mm' }}</span>
+  </div>
+
+  <!-- Contenu session -->
+  <div class="session-content">
+    <h4>{{ session.title }}</h4>
+    <div class="session-details">
+      <span class="detail">📚 {{ session.subject }}</span>
+      <span class="detail">📅 {{ formatDate(session.date) }}</span>
+      <span class="detail">🕒 {{ session.startTime }}</span>
+      <span class="detail">⏳ {{ formatDuration(session.duration) }}</span>
+    </div>
+
+    <!-- Participants -->
+    <div class="participants-section">
+      <span class="participants-count">
+        👥 {{ acceptedCount }} participant(s)
+      </span>
+      <div class="participants-list">
+        @for (p of session.participants; track p.userId._id) {
+          <div class="participant-item">
+            <div class="p-avatar">{{ p.userId.name[0].toUpperCase() }}</div>
+            <span class="p-name">{{ p.userId.name }}</span>
+            <span class="p-status">{{ getStatusIcon(p.status) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Actions -->
+    @if (!isCreator) {
+      <div class="session-actions">
+        @if (myStatus === 'pending') {
+          <button class="btn-accept" (click)="respond('accepted')" [disabled]="loading()">
+            ✅ Participer
+          </button>
+          <button class="btn-refuse" (click)="respond('refused')" [disabled]="loading()">
+            ❌ Refuser
+          </button>
+        } @else if (myStatus === 'accepted') {
+          <span class="status-badge accepted">✅ Vous participez</span>
+          <button class="btn-refuse-small" (click)="respond('refused')">Annuler</button>
+        } @else {
+          <span class="status-badge refused">❌ Invitation refusée</span>
+          <button class="btn-accept-small" (click)="respond('accepted')">Rejoindre</button>
+        }
+      </div>
+    } @else {
+      <span class="creator-badge">👑 Vous avez créé cette session</span>
+    }
+  </div>
+
+  <!-- Commentaires -->
+  <div class="comments-section">
+    <button class="btn-comments" (click)="showComments.update(v => !v)">
+      💬 {{ session.comments.length }} commentaire(s)
+      {{ showComments() ? '▲' : '▼' }}
+    </button>
+
+    @if (showComments()) {
+      <div class="comments-list">
+        @if (session.comments.length === 0) {
+          <p class="no-comments">Aucun commentaire</p>
+        }
+        @for (comment of session.comments; track comment._id) {
+          <div class="comment-item">
+            <div class="c-avatar">{{ comment.userId.name[0].toUpperCase() }}</div>
+            <div class="c-content">
+              <span class="c-name">{{ comment.userId.name }}</span>
+              <p class="c-text">{{ comment.content }}</p>
+              <span class="c-time">{{ comment.createdAt | date:'dd/MM HH:mm' }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="comment-input">
+          <input type="text" [ngModel]="newComment()"
+                 (ngModelChange)="newComment.set($event)"
+                 placeholder="Ajouter un commentaire..."
+                 (keydown.enter)="submitComment()" />
+          <button (click)="submitComment()" [disabled]="!newComment().trim()">➤</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -20,15 +20,21 @@ export class DashboardComponent implements OnInit {
   showStats = signal(false);
 
   quickActions = [
-    { label: 'Matières',       icon: '📚', subtitle: 'Mes matières',    route: '/planning/subjects',     highlight: false },
-    { label: 'Disponibilités', icon: '📅', subtitle: 'Créneaux libres', route: '/planning/availability', highlight: false },
-    { label: 'Sessions',       icon: '🗓️', subtitle: 'Mes sessions',    route: '/planning/sessions',     highlight: false },
-    { label: 'Planning Auto',  icon: '🤖', subtitle: 'Génération IA',   route: '/planning/generate',     highlight: true  },
+    { label: 'Matières',       icon: '📚', subtitle: 'Mes matières',    route: '/subjects',      highlight: false },
+    { label: 'Disponibilités', icon: '📅', subtitle: 'Créneaux libres', route: '/availability',  highlight: false },
+    { label: 'Sessions',       icon: '🗓️', subtitle: 'Mes sessions',    route: '/sessions',      highlight: false },
+    { label: 'Planning Auto',  icon: '🤖', subtitle: 'Génération IA',   route: '/planning/auto', highlight: true  },
   ];
 
   quickLinks = [
     { label: 'Collaboration', icon: '👥', subtitle: 'Mes groupes',       route: '/collaboration' },
     { label: 'Notifications', icon: '🔔', subtitle: 'Mes notifications', route: '/notifications' },
+  ];
+
+  adminLinks = [
+    { label: 'Utilisateurs',  icon: '👥', subtitle: 'Gestion users',    route: '/admin/users' },
+    { label: 'Ajouter Admin', icon: '➕', subtitle: 'Créer compte',     route: '/admin/new-admin' },
+    { label: 'Statistiques',  icon: '📊', subtitle: 'Vue globale',      route: '/admin/stats' },
   ];
 
   constructor(
@@ -37,7 +43,9 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadAll();
+    if (!this.authService.isAdmin()) {
+      this.loadAll();
+    }
   }
 
   loadAll(): void {
@@ -54,6 +62,10 @@ export class DashboardComponent implements OnInit {
     this.showStats.update(v => !v);
   }
 
+  logout(): void {
+    this.authService.logout();
+  }
+
   getMaxHours(): number {
     return Math.max(...this.weeklyStats().map(d => d.hours), 1);
   }
@@ -61,4 +73,5 @@ export class DashboardComponent implements OnInit {
   getBarHeight(hours: number): number {
     return Math.round((hours / this.getMaxHours()) * 100);
   }
+  
 }

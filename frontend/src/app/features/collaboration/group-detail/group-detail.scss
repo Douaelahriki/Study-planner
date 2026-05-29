@@ -136,3 +136,28 @@
   font-size: 0.9rem;
   &:hover { background: #2563eb; }
 }
+.sessions-tab {
+  .sessions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h3 { margin: 0; color: #1e293b; }
+  }
+
+  .empty-sessions {
+    text-align: center;
+    padding: 48px;
+    color: #64748b;
+    p { margin-bottom: 16px; }
+  }
+}
+
+.btn-share-session {
+  background: #3b82f6; color: white;
+  border: none; padding: 10px 20px;
+  border-radius: 8px; cursor: pointer;
+  font-size: 0.9rem;
+  &:hover { background: #2563eb; }
+}
