@@ -1,6 +1,8 @@
 const Session = require('../models/Session');
 const Subject = require('../models/Subject');
 
+
+const checkGoalReached = require('../services/goalCheck.service');
 /**
  * Helper : convertir HH:MM en minutes
  */
@@ -294,7 +296,10 @@ const completeSession = async (req, res, next) => {
     session.status = 'completed';
     session.actualDuration = actualDuration || session.duration;
     
-    await session.save();
+    await session.save(); // ← sauvegarder D'ABORD
+
+    await checkGoalReached(session.userId, session.subjectId); // ← ENSUITE vérifier
+
     await session.populate('subjectId', 'name color priority');
 
     res.json({

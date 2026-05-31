@@ -17,7 +17,44 @@
       <button [class.active]="activeTab() === 'sessions'" (click)="setTab('sessions')">📚 Sessions</button>
       <button [class.active]="activeTab() === 'members'" (click)="setTab('members')">👥 Membres</button>
       <button [class.active]="activeTab() === 'invite'" (click)="setTab('invite')">➕ Inviter</button>
+      <button [class.active]="activeTab() === 'planning'" (click)="setTab('planning')">
+  📅 Planning
+</button>
     </div>
+
+    @if (activeTab() === 'planning') {
+  <div class="planning-tab">
+    <h3>📅 Sessions à venir des membres</h3>
+
+    @if (membersSessions().length === 0) {
+      <div class="empty">Aucune session planifiée par les membres</div>
+    } @else {
+      @for (session of membersSessions(); track session._id) {
+        <div class="member-session-card">
+          <div class="session-left">
+            <div class="color-dot" 
+                 [style.background]="session.subjectId?.color || '#3b82f6'">
+            </div>
+            <div>
+              <p class="session-title">{{ session.title || session.subjectId?.name }}</p>
+              <p class="session-subject">📚 {{ session.subjectId?.name }}</p>
+            </div>
+          </div>
+          <div class="session-right">
+            <span class="session-member">👤 {{ session.userId?.name }}</span>
+            <span class="session-date">📅 {{ session.date | date:'dd/MM/yyyy' }}</span>
+            <span class="session-time">🕒 {{ session.startTime }}</span>
+            <span class="session-duration">⏳ {{ session.duration }}min</span>
+            <span class="session-status" [class]="session.status">
+              {{ session.status === 'planned' ? '🗓️ Planifiée' : 
+                 session.status === 'completed' ? '✅ Complétée' : '❌ Manquée' }}
+            </span>
+          </div>
+        </div>
+      }
+    }
+  </div>
+}
 
     <!-- Chat -->
     @if (activeTab() === 'chat') {

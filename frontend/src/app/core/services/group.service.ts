@@ -40,4 +40,8 @@ export class GroupService {
   sendMessage(groupId: string, content: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/${groupId}/messages`, { content });
   }
+
+  getMembersSessions(groupId: string): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/${groupId}/members-sessions`);
+}
 }
