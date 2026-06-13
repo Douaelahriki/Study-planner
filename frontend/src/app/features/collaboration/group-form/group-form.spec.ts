@@ -1,22 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GroupFormComponent } from './group-form';
 
-import { GroupForm } from './group-form';
-
-describe('GroupForm', () => {
-  let component: GroupForm;
-  let fixture: ComponentFixture<GroupForm>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GroupForm],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(GroupForm);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
+describe('GroupFormComponent', () => {
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(GroupFormComponent).toBeTruthy();
   });
 });

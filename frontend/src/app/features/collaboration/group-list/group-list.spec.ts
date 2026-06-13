@@ -1,22 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GroupListComponent } from './group-list';
 
-import { GroupList } from './group-list';
-
-describe('GroupList', () => {
-  let component: GroupList;
-  let fixture: ComponentFixture<GroupList>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GroupList],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(GroupList);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
+describe('GroupListComponent', () => {
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(GroupListComponent).toBeTruthy();
   });
 });

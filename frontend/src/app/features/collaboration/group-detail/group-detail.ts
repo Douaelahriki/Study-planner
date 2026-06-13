@@ -24,10 +24,10 @@ export class GroupDetailComponent implements OnInit {
   inviteEmail = signal('');
   inviteError = signal('');
   inviteSuccess = signal('');
-  activeTab = signal<'chat' | 'sessions' | 'members' | 'invite'>('chat');
+  activeTab = signal<'chat' | 'sessions' | 'planning' | 'members' | 'invite'>('chat');
   groupId = signal('');
   showShareForm = signal(false);
-
+  membersSessions = signal<any[]>([]);
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -39,6 +39,11 @@ export class GroupDetailComponent implements OnInit {
     this.groupId.set(id);
     this.loadGroup(id);
     this.loadSessions(id);
+
+    this.groupService.getMembersSessions(id).subscribe({
+    next: (res) => this.membersSessions.set(res.data),
+    error: () => {}
+    });
   }
 
   loadGroup(id: string): void {
@@ -76,7 +81,7 @@ export class GroupDetailComponent implements OnInit {
     });
   }
 
-  setTab(tab: 'chat' | 'sessions' | 'members' | 'invite'): void {
+  setTab(tab: 'chat' | 'sessions' | 'planning' | 'members' | 'invite'): void {
     this.activeTab.set(tab);
   }
 }

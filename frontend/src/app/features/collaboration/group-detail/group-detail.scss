@@ -161,3 +161,70 @@
   font-size: 0.9rem;
   &:hover { background: #2563eb; }
 }
+.planning-tab {
+  h3 { margin: 0 0 16px; color: #1e293b; }
+
+  .empty {
+    text-align: center;
+    padding: 48px;
+    color: #94a3b8;
+  }
+
+  .member-session-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #3b82f6;
+
+    .session-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .color-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .session-title {
+        margin: 0;
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.95rem;
+      }
+
+      .session-subject {
+        margin: 2px 0 0;
+        font-size: 0.8rem;
+        color: #64748b;
+      }
+    }
+
+    .session-right {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+
+      span {
+        font-size: 0.8rem;
+        color: #475569;
+        background: #f1f5f9;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
+
+      .planned   { background: #eff6ff; color: #3b82f6; }
+      .completed { background: #dcfce7; color: #16a34a; }
+      .missed    { background: #fee2e2; color: #ef4444; }
+    }
+  }
+}

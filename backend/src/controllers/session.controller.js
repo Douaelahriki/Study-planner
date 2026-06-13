@@ -1,6 +1,7 @@
 const Session = require('../models/Session');
 const Subject = require('../models/Subject');
-
+// Ajoute cette ligne tout en haut du fichier avec les autres imports
+const checkGoalReached = require('../services/goalCheck.service');
 /**
  * Helper : convertir HH:MM en minutes
  */
@@ -292,9 +293,14 @@ const completeSession = async (req, res, next) => {
     }
 
     session.status = 'completed';
+     
     session.actualDuration = actualDuration || session.duration;
     
     await session.save();
+     
+
+    // Après avoir sauvegardé la session complétée :
+    await checkGoalReached(session.userId, session.subjectId);
     await session.populate('subjectId', 'name color priority');
 
     res.json({
